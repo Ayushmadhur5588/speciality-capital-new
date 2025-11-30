@@ -16,7 +16,6 @@ export default function Home() {
       <ApplicationSection />
       <WhatWeOfferSection />
       <HowItWorksSection />
-      <ReviewsSection />
       <ContactSection />
       <QualificationsSection />
       <Footer />

@@ -1,3 +1,5 @@
+import { LoanApplicationForm } from "../loan-application-form";
+
 export function ApplicationSection() {
   return (
     <section className="bg-gradient-to-br from-purple-50 to-white py-20">
@@ -11,7 +13,9 @@ export function ApplicationSection() {
             business forward.
           </p>
         </div>
-        <div className="max-w-4xl mx-auto">{/* Import LoanApplicationForm component here */}</div>
+        <div className="max-w-4xl mx-auto">
+          <LoanApplicationForm />
+        </div>
       </div>
     </section>
   )
