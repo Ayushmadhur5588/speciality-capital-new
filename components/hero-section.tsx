@@ -8,9 +8,9 @@ export function HeroSection() {
   const [currentTextIndex, setCurrentTextIndex] = useState(0)
   const [isVisible, setIsVisible] = useState(true)
 
-  // 🟣 Inject ServiceNow Chatbot Script Here
+ 
   useEffect(() => {
-    // NEW ServiceNow Script Load
+   
     const script = document.createElement("script")
     script.src = "https://bangmetricllcdemo2.service-now.com/scripts/sn_csm_ec.js?v=5.6"
     script.async = true
@@ -27,7 +27,7 @@ export function HeroSection() {
     return () => {}
   }, [])
 
-  // 🟣 Text Rotation Animation
+
   useEffect(() => {
     const fadeInterval = setInterval(() => {
       setIsVisible(false)
@@ -46,7 +46,7 @@ export function HeroSection() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12 items-center">
             
-            {/* Left Content */}
+           
             <div className="text-white z-10">
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
                 <span className="text-[#5FEC9B]">Empowering</span> small businesses
@@ -68,7 +68,7 @@ export function HeroSection() {
                 Get Funded Today
               </button>
 
-              {/* Trustpilot Widget */}
+           
               <div className="flex items-center gap-3">
                 <span className="text-yellow-300 text-lg">★</span>
                 <span className="text-sm font-semibold">Trustpilot</span>
@@ -83,9 +83,9 @@ export function HeroSection() {
               </div>
             </div>
 
-            {/* Right Side */}
+         
             <div className="relative hidden lg:block h-96 perspective pr-20">
-              {/* LEFT SIDEBAR */}
+            
               <div className="absolute top-0 left-0 w-32 bg-white rounded-2xl shadow-2xl overflow-hidden z-20">
                 <div className="bg-gradient-to-b from-[#5D3FB8] to-[#4A2FA0] p-5 pb-8 flex items-end h-20">
                   <div className="w-8 h-8 bg-gray-300 rounded-lg opacity-40"></div>
@@ -106,9 +106,9 @@ export function HeroSection() {
                 </div>
               </div>
 
-              {/* MAIN DASHBOARD */}
+             
               <div className="absolute top-16 left-28 right-0 bg-white rounded-3xl shadow-2xl p-8 mr-24">
-                {/* Header */}
+              
                 <div className="grid grid-cols-2 gap-8 mb-8">
                   <div>
                     <div className="text-xs text-gray-500 font-semibold mb-2">Term Cap</div>
@@ -192,7 +192,7 @@ export function HeroSection() {
           </div>
         </div>
 
-        {/* Divider */}
+     
         <div className="absolute bottom-0 left-0 right-0 h-40">
           <svg viewBox="0 0 1440 200" className="w-full h-full" preserveAspectRatio="none">
             <path d="M0,80 Q360,20 720,80 T1440,80 L1440,200 L0,200 Z" fill="white" />
