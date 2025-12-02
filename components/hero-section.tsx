@@ -2,32 +2,109 @@
 
 import { useState, useEffect } from "react"
 
-export function HeroSection() {
+export default function HeroSection() {
   const rotatingTexts = ["Exceed revenue targets", "Grow your team", "Amplify your marketing"]
 
   const [currentTextIndex, setCurrentTextIndex] = useState(0)
   const [isVisible, setIsVisible] = useState(true)
 
- 
+  // ===================================
+  // Widget initialization ko separate function mein rakha
+  // ===================================
+  // Ye function ServiceNow widget ko initialize karta hai
+  // Isko hum baar baar call kar sakte hain jab bhi session expire ho
+  const initServiceNowWidget = () => {
+    if (window.SN_CSM_EC) {
+      console.log("🟢 ServiceNow widget initialized")
+      window.SN_CSM_EC.init({
+        moduleID: "https://bangmetricllcdemo2.service-now.com/#976bac153b253a50c280759c24e45a5c",
+        loadFeature: window.SN_CSM_EC.loadEMFeature()
+      })
+    }
+  }
+
+  // ===================================
+  // ServiceNow Widget Setup
+  // ===================================
   useEffect(() => {
-   
+    // Script ko dynamically load kar rahe hain
     const script = document.createElement("script")
     script.src = "https://bangmetricllcdemo2.service-now.com/scripts/sn_csm_ec.js?v=5.6"
     script.async = true
+    
     script.onload = () => {
-      if (window.SN_CSM_EC) {
-        window.SN_CSM_EC.init({
-          moduleID: "https://bangmetricllcdemo2.service-now.com/#976bac153b253a50c280759c24e45a5c",
-          loadFeature: window.SN_CSM_EC.loadEMFeature()
-        })
-      }
+      // Jab script load ho jaye, tab widget initialize karo
+      initServiceNowWidget()
+      
+      // ===================================
+      // 🔧 FIX 2: Auto-refresh mechanism
+      // ===================================
+      // Har 15 minute (900000 milliseconds) mein widget ko refresh karo
+      // Isse session expire nahi hoga
+      const refreshInterval = setInterval(() => {
+        console.log("🔄 Auto-refreshing ServiceNow session...")
+        initServiceNowWidget()
+      }, 900000) // 15 minutes = 15 * 60 * 1000 = 900000ms
+      
+      // Cleanup: Jab component unmount ho toh interval clear karo
+      return () => clearInterval(refreshInterval)
     }
+    
+    script.onerror = () => {
+      console.error("❌ Failed to load ServiceNow script")
+    }
+    
     document.body.appendChild(script)
 
-    return () => {}
-  }, [])
+    // ===================================
+    // 🔧 FIX 3: Error handling for CSRF token
+    // ===================================
+    // Ye listener ServiceNow se aane wale messages ko sunta hai
+    const messageHandler = (event) => {
+      // Safety check: event.data ko safely parse karo
+      try {
+        let data = event.data
+        
+        // Agar data string format mein hai toh JSON parse karo
+        if (typeof data === 'string') {
+          try {
+            data = JSON.parse(data)
+          } catch (e) {
+            // Agar parse nahi ho paya toh return kar do
+            return
+          }
+        }
+        
+        // Check karo agar CSRF token error aaya hai
+        if (data.error && data.error.message === 'Invalid CSRF token') {
+          console.log("⚠️ CSRF error detected! Reinitializing widget...")
+          // Immediately widget ko phir se initialize karo
+          initServiceNowWidget()
+        }
+        
+        // Agar session expired message aaya
+        if (data.error && data.error.detail && data.error.detail.includes('session expired')) {
+          console.log("⚠️ Session expired! Reinitializing widget...")
+          initServiceNowWidget()
+        }
+      } catch (e) {
+        // Koi bhi unexpected error aaye toh ignore karo
+        console.error("Error in message handler:", e)
+      }
+    }
+    
+    // Message listener add karo
+    window.addEventListener('message', messageHandler)
 
+    // Cleanup function
+    return () => {
+      window.removeEventListener('message', messageHandler)
+    }
+  }, []) // Empty dependency array = sirf ek baar run hoga
 
+  // ===================================
+  // Text Rotation Effect (Original code)
+  // ===================================
   useEffect(() => {
     const fadeInterval = setInterval(() => {
       setIsVisible(false)
@@ -46,7 +123,7 @@ export function HeroSection() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12 items-center">
             
-           
+            {/* Left Content */}
             <div className="text-white z-10">
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
                 <span className="text-[#5FEC9B]">Empowering</span> small businesses
@@ -68,7 +145,7 @@ export function HeroSection() {
                 Get Funded Today
               </button>
 
-           
+              {/* Trustpilot Rating */}
               <div className="flex items-center gap-3">
                 <span className="text-yellow-300 text-lg">★</span>
                 <span className="text-sm font-semibold">Trustpilot</span>
@@ -83,9 +160,10 @@ export function HeroSection() {
               </div>
             </div>
 
-         
+            {/* Right Content - Dashboard Preview */}
             <div className="relative hidden lg:block h-96 perspective pr-20">
             
+              {/* Sidebar Card */}
               <div className="absolute top-0 left-0 w-32 bg-white rounded-2xl shadow-2xl overflow-hidden z-20">
                 <div className="bg-gradient-to-b from-[#5D3FB8] to-[#4A2FA0] p-5 pb-8 flex items-end h-20">
                   <div className="w-8 h-8 bg-gray-300 rounded-lg opacity-40"></div>
@@ -106,7 +184,7 @@ export function HeroSection() {
                 </div>
               </div>
 
-             
+              {/* Main Dashboard Card */}
               <div className="absolute top-16 left-28 right-0 bg-white rounded-3xl shadow-2xl p-8 mr-24">
               
                 <div className="grid grid-cols-2 gap-8 mb-8">
@@ -157,7 +235,7 @@ export function HeroSection() {
                   </div>
                 </div>
 
-                {/* Bottom */}
+                {/* Bottom Section */}
                 <div className="space-y-4">
                   <div className="text-right">
                     <div className="text-xs text-gray-500 font-semibold">Overall Investment</div>
@@ -192,7 +270,7 @@ export function HeroSection() {
           </div>
         </div>
 
-     
+
         <div className="absolute bottom-0 left-0 right-0 h-40">
           <svg viewBox="0 0 1440 200" className="w-full h-full" preserveAspectRatio="none">
             <path d="M0,80 Q360,20 720,80 T1440,80 L1440,200 L0,200 Z" fill="white" />
